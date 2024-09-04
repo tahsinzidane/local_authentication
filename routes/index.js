@@ -4,6 +4,15 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const User = require('../routes/users');
 
+// Middleware to check if user is authenticated
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  req.flash('error_msg', 'Please log in to view that resource');
+  res.redirect('/login');
+}
+
 // Home page (protected route)
 router.get('/', (req, res) => {
   if (req.isAuthenticated()) {
@@ -82,5 +91,9 @@ router.get('/logout', (req, res) => {
     res.redirect('/login');
   });
 });
+
+router.get('/profile', ensureAuthenticated, (req, res) => {
+  res.send('hlw world from profile')
+})
 
 module.exports = router;
